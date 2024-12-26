@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Sort Algorithm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .bar-container {
+            display: flex;
+            align-items: flex-end;
+            height: 400px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .bar {
+            width: 40px;
+            margin: 0 5px;
+            background-color: #ff69b4; /* Pink color */
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            border-radius: 5px;
+            transition: transform 1s, height 1s;
+        }
+        .bar span {
+            display: block;
+            margin-top: 5px;
+        }
+        .description {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .highlight {
+            background-color: #ff4500; /* Orange color */
+        }
+        .smaller {
+            background-color: #ff0000; /* Red color */
+        }
+    </style>
+</head>
+<body>
+    <h1>Bubble Sort Algorithm</h1>
+    <div class="bar-container" id="bar-container">
+        <!-- Bars will be dynamically generated here -->
+    </div>
+    <div class="description" id="description">
+        <!-- Description will be dynamically generated here -->
+    </div>
+    <button onclick="startSort()">Start Sorting</button>
+    <button onclick="resetArray()">Reset</button>
+    <button onclick="pauseSort()">Pause</button>
+    <button onclick="continueSort()">Continue</button>
+    <script>
+        const initialArr = [64, 25, 12, 22, 11, 90, 45, 33, 77, 55];
+        let arr = [...initialArr];
+        let isPaused = false;
+        const barContainer = document.getElementById('bar-container');
+
+        function createBars(arr) {
+            barContainer.innerHTML = '';
+            arr.forEach(value => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = value * 5 + 'px';
+                bar.innerHTML = `<span>${value}</span>`;
+                barContainer.appendChild(bar);
+            });
+        }
+
+        async function bubble_sort(arr) {
+            let n = arr.length;
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    document.getElementById('description').innerText = `Comparing ${arr[j]} and ${arr[j + 1]}`;
+                    highlightBars([j, j + 1]);
+                    if (arr[j] > arr[j + 1]) {
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                        createBars(arr);
+                        document.getElementById('description').innerText = `Swapped ${arr[j]} and ${arr[j + 1]}`;
+                        highlightSmaller([j + 1]);
+                        await new Promise(resolve => setTimeout(resolve, 2000)); // Increased delay for slower animation
+                        while (isPaused) {
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                        }
+                        removeSmaller([j + 1]);
+                    }
+                    removeHighlight([j, j + 1]);
+                }
+            }
+        }
+
+        function highlightBars(indices) {
+            indices.forEach(index => {
+                barContainer.children[index].classList.add('highlight');
+            });
+        }
+
+        function removeHighlight(indices) {
+            indices.forEach(index => {
+                barContainer.children[index].classList.remove('highlight');
+            });
+        }
+
+        function highlightSmaller(indices) {
+            indices.forEach(index => {
+                barContainer.children[index].classList.add('smaller');
+            });
+        }
+
+        function removeSmaller(indices) {
+            indices.forEach(index => {
+                barContainer.children[index].classList.remove('smaller');
+            });
+        }
+
+        function startSort() {
+            isPaused = false;
+            bubble_sort(arr);
+        }
+
+        function resetArray() {
+            arr = [...initialArr];
+            createBars(arr);
+            document.getElementById('description').innerText = '';
+        }
+
+        function pauseSort() {
+            isPaused = true;
+        }
+
+        function continueSort() {
+            isPaused = false;
+        }
+
+        createBars(arr);
+    </script>
+</body>
+</html>
